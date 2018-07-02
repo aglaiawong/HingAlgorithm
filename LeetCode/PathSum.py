@@ -1,3 +1,8 @@
+#############################################
+# NESTED function: reduces calling overhead #
+#############################################
+
+
 # Definition for a binary tree node.
 # class TreeNode(object):
 #     def __init__(self, x):
@@ -5,6 +10,7 @@
 #         self.left = None
 #         self.right = None
 
+#55ms
 class Solution(object):
     def pathSum(self, root, sum):
         """
@@ -35,13 +41,8 @@ class Solution(object):
         
 		
 ##########################################################################
-# Definition for a binary tree node.
-# class TreeNode(object):
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
 
+# 88ms
 class Solution(object):
 	def pathSum(self, root, sum):
 		self.paths = []
