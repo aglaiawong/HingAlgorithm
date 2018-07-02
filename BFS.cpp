@@ -1,0 +1,57 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+
+class Graph{
+	int n;
+	queue<int>* adj;	//pointer to an array of queues, one queue per node
+public:
+	Graph(int n);
+	void addEdge(int v, int w);		//node to add & weight
+	void BFS(int s);	//s as starting node 
+};
+
+Graph::Graph(int n){
+	this-n = n;
+	adj = new queue<int>[n];	//one extendible queue per node
+}
+
+void Graph::addEdge(int v, int w){
+	adj[v].push(w);		//add weight to a node v's adj list==add an edge
+}
+
+void Graph::BFS(int s){
+	
+	//resultant BFS ordering starting from node s
+	queue<int>::result;		
+	
+	//node initializations for traversal
+	bool *visited = new bool[n];
+	for(int i=0;i<n;i++){
+		visited[i] = false;
+	}
+
+	//a queue for BFS
+	queue<int>bfs_q; 
+	queue<int>::iterator it;
+	
+	//start traversal: 
+	bfs_q.push(s);
+	visited[s] = true; 
+	
+	while(!bfs_q.empty()){
+		//get and pop the parent
+		int p = bfs_q.front();		//save parent before pop
+		result.push(p);	
+		bfs_q.pop();
+		
+		// traverse its children : only traverse the queue for that parent node only.
+		for(it=adj[p].begin(); it!=adj[p].end(); it++){
+			if(!vistied){
+				visited[*it] = true; 
+				bfs_q.push(*it);
+			}
+		}
+	}
+	
+}
