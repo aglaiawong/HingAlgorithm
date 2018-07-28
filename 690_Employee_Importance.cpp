@@ -5,7 +5,7 @@ public:
         unordered_map<int,int > um;
         int n=employees.size();
         for(int i=0;i<n;i++)
-            um[employees[i]->id]=i;
+            um[employees[i]->id]=i;		//map id to index 
         queue<int> Q;
         Q.push(id);
         int ans=0;
