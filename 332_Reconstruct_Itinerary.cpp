@@ -1,5 +1,7 @@
 /*
 332_Reconstruct_Itinerary
+beat 45.59%
+12ms
 */
 
 vector<string> findItinerary(vector<pair<string, string>> tickets){		//an array of pairs 
@@ -26,3 +28,32 @@ void visit(string airport){		//the DFS part
 	route.push_back(airport);
 	
 }
+
+/*
+8ms
+- improv. by using unordered_map instead of the orderred map
+*/
+class Solution {
+public:
+    vector<string> findItinerary(vector<pair<string, string>> tickets) {
+        vector<string> res;
+        unordered_map<string, multiset<string>> m;
+        for(int i = 0; i < tickets.size(); i++)
+            m[tickets[i].first].insert(tickets[i].second);
+        visit("JFK", m, res);
+        reverse(res.begin(), res.end());
+        return res;
+    }
+    
+    void visit(string airport, unordered_map<string, multiset<string>>& m, vector<string>& route) {
+        while(!m[airport].empty()){
+            string next = *m[airport].begin();		//access O(1) for unordered_map
+													//c.f. O(lgN) for (ordered) map
+            m[airport].erase(m[airport].begin());
+            visit(next, m, route);
+        }
+        route.push_back(airport);
+    }
+};
+
+
