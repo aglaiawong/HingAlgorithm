@@ -19,6 +19,7 @@ void visit(string airport){		//the DFS part
 	while(targets[airport].size()){
 		string next = *targets[airport].begin();	//the prev dest is the src airport in next stop 
 		targets[airport].erase(targets[airport].begin());  //N.B. the starting airport DNC! only des change! 
+		//the erase action micmic marking the node as visited 
 		visit(next);
 	}
 	
