@@ -96,13 +96,106 @@ init = tf.global_variables_initializer()	#this operation only returns a handle t
 sess.run(init)	#from the handle, run() initializesthe global variable;
 
 
-
-
-
 '''
 BKMK: https://www.tensorflow.org/guide/low_level_intro
 @ feature columns 
 '''
+
+'''
+Feature columns in tensorflow
+- accept inputs as dictionaries; 
+- convert to feature columns to be used in model 
+
+There are two types of faeture columns
+- categorical columns: convert dict to labels 
+- dense columns: convert dict to matrix
+- numeric columns: ordinary numeric columns
+'''
+
+
+# specify a feature column
+numeric_feature_column = tf.feature_column.numeric_column(key="SepalLength", dtype=tf.float64, shape=10)
+
+#binning
+bucketized_feature_col = tf.feature_column.bucketized_column(src_col=numeric_feature_column, boundaries=[1960,1980,2000])
+'''
+< 1960 	[1, 0, 0, 0]
+>= 1960 but < 1980 	[0, 1, 0, 0]
+>= 1980 but < 2000 	[0, 0, 1, 0]
+>= 2000 	[0, 0, 0, 1]
+'''
+
+#indicator col: convert categories into one-hot
+categorical_col = tf.feature_column.categorical_column_with_vocabulary_list(key="Character", vocabulary_list=["Takagi", "Megumin", "Hinatsuru Ai"])
+indicator_column = tf.feature_column.indicator_column(categorical_col)
+
+# to handle ID-type, numberic but label-like data
+identity_fc = tf.feature_column.categorical_column_with_identity(key="Char ID", num_buckets=3)
+
+features = {
+	'sales': [[5],[10],[8],[9]],
+	'department':['sports', 'sports', 'gardening', 'gardening']
+}
+
+department_column = tf.feature_column.categorical_column_with_vocabulary_list('department', ['sports', 'gardening'])	#'department' as key
+department_column = tf.feature_column.indicator_column(department_column)		#one-hot the category
+columns = [
+	tf.feature_column.numeric_column('sales'),
+	department_column
+]
+
+inputs = tf.feature_column.input_layer(features, columns)
+#Returns a dense Tensor as input layer based on given feature_columns.
+
+var_init = tf.global_variables_initializer()
+table_init = tf.tables_initializer()
+#ategorical columns use lookup tables internally and these require a separate initialization op, tf.tables_initializer
+sess = tf.Session()
+sess.run((var_init, table_init))
+print(sess.run(inputs))		#session run the input layer
+'''
+[[  1.   0.   5.]
+ [  1.   0.  10.]
+ [  0.   1.   8.]
+ [  0.   1.   9.]]
+one-hot "department" as the first two indices and "sales" as the third.
+'''
+
+'''
+A complete running example 
+'''
+
+x = tf.constant([[1],[2],[3],[4]], dtype=tf.float32)
+y_true = tf.constant([[0],[-1],[-2],[-3]], dtype=tf.float32)
+linear_model = tf.layers.Dense(units=1)	#1 input only 
+
+y_pred = linear_model(x)
+loss = tf.losses.mean_squared_error(labels=y_true, predictions=y_pred)
+
+optimizer = tf.train.GradientDescentOptimizer(0.01)		# learning rate 
+train = optimizer.minimize(loss)
+
+sess.tf.Session()
+init = tf.global_variables_initializer()
+sess.run(init)
+
+for i in range(100):
+	_, loss_value = sess.run((train, loss))
+	print(loss_value)
+
+print(sess.run(y_pred))
+'''
+[[ 0.02631879]
+ [ 0.05263758]
+ [ 0.07895637]
+ [ 0.10527515]]
+'''
+
+	
+
+
+
+
 
 
 
