@@ -1,3 +1,7 @@
+/*
+an implementation of MIN HEAP
+*/
+
 #include<iostream>
 #include<climits>
 
@@ -43,6 +47,11 @@ MinHeap::MinHeap(int c){
 	harr = new int[c];
 }
 
+/*
+Proof of correctness: 
+DNM if current i is left or right child, they share one parent only. 
+Thus, it's always correct to swap the child with parent for next loop's comparison
+*/
 void MinHeap::heapify(int i){
 	while(i!=0 && harr[i]<harr[parent(i)]){
 		swap(&harr[i], &harr[parent(i)]);
@@ -71,6 +80,7 @@ void MinHeap::insertKey(int k){
 	harr[i] = k;
 	
 	//fix the binary tree after adjustment
+	//one call ensures put into right place
 	heapify(i);
 }
 
@@ -81,6 +91,7 @@ void MinHeap::decreaseKey(int i, int new_val){
 
 int MinHeap::extractMin(){
 	//base cases: 0 or 1 node in binary heap only 
+	//whenever adding/taking away elements from array, check emptiness/fullness as the base cases 
 	if(heap_size <= 0)
 		return INT_MAX;
 	if(heap_size == 1){
@@ -99,6 +110,10 @@ void MinHeap::deleteKey(int i){
 	extractMin();
 }
 
+/*
+start from parent, bubble up the child recursively. 
+each round, the parent i is updated for continuation 
+*/
 void MinHeap::MinHeapify(int i){
 	int l = left(i);
 	int r = right(i);
