@@ -27,9 +27,10 @@ struct Edge{
 }
 
 class Graph{
+	//a private method to get append new node at the head of adjacey list
 	Node* getAdjListNode(int dest, Node* head){
 		Node* newNode = new Node();
-		newNode->val = destl 
+		newNode->val = dest;
 		newNode->next = head; 
 		return newNode; 
 	}
