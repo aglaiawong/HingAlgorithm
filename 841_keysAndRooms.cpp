@@ -2,6 +2,30 @@
 841. Keys and Rooms
 */
 
+//4ms formulation
+class Solution {
+public:
+    bool canVisitAllRooms(vector<vector<int>>& rooms) {
+        stack<int> dfs;
+        dfs.emplace(0);
+        unordered_set<int> seen = { 0 };
+        while (!dfs.empty()) {
+            int i = dfs.top();
+            dfs.pop();
+            for (int j : rooms[i]) {
+                if (seen.count(j) == 0) {
+                    dfs.emplace(j);
+                    seen.insert(j);
+                    if (rooms.size() == seen.size()) return true;
+                }
+            }
+        }
+        return rooms.size() == seen.size();
+    }
+};
+
+
+
 //BFS
 
 class Solution {
@@ -28,7 +52,8 @@ public:
 	}
 };
 
-//DFS formulation
+
+//DFS formulation: 40 ms
 class Solution{
 	void dfs(vector<vector<int>>& rooms, unordered_set<int>& keys, unordered_set<int>& visited, int curr){
 		visited.insert(curr);
@@ -49,7 +74,7 @@ class Solution{
 			dfs(rooms, keys, visited, 0);
 			return visited.size() == rooms.size();
 		}
-}
+};
 
 
 

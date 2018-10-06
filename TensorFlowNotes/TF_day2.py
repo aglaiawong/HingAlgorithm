@@ -27,10 +27,14 @@ print(sess.run((out1, out2)))	#same set of random values returned
 Feeding by placeholder
 - parameterized a graph 
 - for providing value to a variable later 
+- The only difference between placeholders and other tf.Tensors is that placeholders throw an error if no value is fed to them.
 '''
+
+# the following placeholders must be initialized in run() using feed_dict()!!
 x = tf.placeholder(tf.float32)  	#build graph by init a tensor
 y = tf.placeholder(tf.float32)
 z = x + y 		#build graph by operation
+
 
 #feeding at run()
 sess.run(z, feed_dict={x:3, y:4.5})		#7.5

@@ -46,6 +46,7 @@ public:
 		for(int i =0; i<N;i++)
 			head[i] = NULL; 
 		
+		//for directed graph
 		for(int i=0; i<n; i++){
 			int src = edges[i].src;
 			int dest = edges[i].dest; 
