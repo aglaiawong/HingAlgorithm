@@ -18,6 +18,7 @@ Graph::Graph(int n){
 
 void Graph::addEdge(int v, int w){
 	adj[v].push(w);		//add weight to a node v's adj list==add an edge
+	//use a ptr to an array of queues --> micmic 2d array with flexible size in each queue 
 }
 
 void Graph::BFS(int s){
@@ -53,5 +54,12 @@ void Graph::BFS(int s){
 			}
 		}
 	}
-	
 }
+
+
+/* Tips:
+1. have recipe in plaintext
+2. dictate: understand why such implementation 
+3. understand how components link tgt in code
+*/
+
