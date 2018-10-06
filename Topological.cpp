@@ -3,7 +3,7 @@
 	a DAG returns at least 1 topological ordering
 	else no topological order and cycle detected;
 	
-	Also, DAG usually no symmetric edgeacency list/matrix;
+	Also, DAG usually no symmetric adjacency list/matrix;
 	Thus, no spatial/time optimalization possible
 */
 
@@ -19,6 +19,7 @@ void topological_ordering(){
 /*evaluate the # of incoming edges, i.e. in-degree, for each node */	
 
 	for(int i=0; i<n; i++) incoming[i]=0;		//initialization: prepare for addition 
+	
 	for(int i=0; i<n;i++){		//scan along one axis once, each node as ancestor 
 		for(int j=0; j<n; j++){		//each node as predeceser 
 			if(edge[i][j]) incoming[j]++;		//exit(i,j): update inDeg(predeceser)
