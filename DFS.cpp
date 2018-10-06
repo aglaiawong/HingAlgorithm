@@ -14,7 +14,7 @@ public:
 };
 
 Graph::Graph(int n){
-	this-n = n;
+	this->n = n;
 	adj = new queue<int>[n];	//one extendible queue per node
 }
 
@@ -31,11 +31,13 @@ void Graph::DFS(int v, bool visited[]){
 	for(it=adj[v].begin();it!=adj[v].begin();it++){
 		if(!visited[*it]){
 			DFS(*it, visited);	//when returned from recursive frame, then examine another child of current parent node
+			//No confuse: visited nodes still in adjacey list and is not indeed removed
+			// thus, 'removal' is conceptual.
 		}
 	}
 }
 
-void Graph::DFS_Main(int s){
+void Graph::DFS_Main(int s){	//pick a node to run DFS/BFS
 	
 	//initialize visit array, be amended in subroutine
 	bool *visited = new bool[n];
