@@ -37,6 +37,8 @@ void Graph::addEdge(int v, int w)
 } 
   
 // A recursive function used by topologicalSort 
+// all graph algorithm is starting-node dependent; 
+// i.e. which node to pick as starting node would affect the resultant graph returned; 
 void Graph::topologicalSortUtil(int v, bool visited[],  
                                 stack<int> &Stack) 
 { 
@@ -85,7 +87,7 @@ void Graph::topologicalSort()
     { 
         cout << Stack.top() << " "; 
         Stack.pop(); 
-    } 
+    }
 } 
   
 // Driver program to test above functions 
