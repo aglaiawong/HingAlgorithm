@@ -39,6 +39,7 @@ void Graph::addEdge(int v, int w)
 // A recursive function used by topologicalSort 
 // all graph algorithm is starting-node dependent; 
 // i.e. which node to pick as starting node would affect the resultant graph returned; 
+// since there may not exist proper ordering between two nodes; 
 void Graph::topologicalSortUtil(int v, bool visited[],  
                                 stack<int> &Stack) 
 { 
@@ -49,8 +50,8 @@ void Graph::topologicalSortUtil(int v, bool visited[],
 	// i.e. look for a node's children
     list<int>::iterator i; 
     for (i = adj[v].begin(); i != adj[v].end(); ++i) 
-        if (!visited[*i]) 
-            topologicalSortUtil(*i, visited, Stack); 
+        if (!visited[*i]) 		//some nodes may previously visited by older ancesters 
+            topologicalSortUtil(*i, visited, Stack); 	//DFS
   
     // Push current vertex to stack which stores result 
 	// here: iff all child node has been visited. 
@@ -71,13 +72,14 @@ void Graph::topologicalSort()
 	
     bool *visited = new bool[V]; 
     for (int i = 0; i < V; i++) 
-        visited[i] = false; 
+        visited[i] = false;
   
     // Call the recursive helper function to store Topological 
     // Sort starting from all vertices one by one 
     for (int i = 0; i < V; i++) 
       if (visited[i] == false) 
-        topologicalSortUtil(i, visited, Stack); 
+        topologicalSortUtil(i, visited, Stack); 	//only return PARTIAL topological sorting. 
+		//run DFS
   
     // Print contents of stack: print in reverse order of stack; 
 	// reverse stack = proper topological order 
