@@ -6,50 +6,50 @@ typedef pair<int,int> iPair;
 
 class Graph{
     int V;
-    //lista de adyacencia con pesos
-    //list<int> *adj; sin pesos
+    //adj list with weights
+    //list<int> *adj; without weights 
     list <pair<int,int> > *adj;
 
 public:
-        Graph(int V);
-        void addEdge(int u,int v,int w);
-        void primMST();
+	Graph(int V);
+	void addEdge(int u,int v,int w);
+	void primMST();
 };
 Graph::Graph(int V){
     this->V = V;
     adj = new list<iPair>[this->V];
 }
 void Graph::addEdge(int u,int v,int w){
-    //Para lista de adyacencia es (label,peso)
+    //Para lista de adyacencia es (label,weight)
     adj[u].push_back(make_pair(v,w));
     adj[v].push_back(make_pair(u,w));
 }
 void Graph::primMST(){
-    //Priority Queue (PQ) es (peso,label)
+    //Priority Queue (PQ) es (weight,label)
     //Implementa un MIN HEAP de iPair
     priority_queue<iPair,vector<iPair>,greater<iPair> > pq;
 
     int src = 0;
 
     vector<int> key(V,INF);
-    vector<int> parent(V,-1);
-    vector<bool> inMST(V,false);
+    vector<int> parent(V,-1);	//for printing MST only.
+    vector<bool> inMST(V,false);	// subset of MST 
 
     pq.push(make_pair(0,src));
     key[src] = 0;
 
     while(!pq.empty()){
-        int u = pq.top().second;
+        int u = pq.top().second;	//get the node (label); use this parent node within each loop in while
         pq.pop();
 
         inMST[u] = true;
         list<pair<int,int> >::iterator it;
-        for(it = adj[u].begin();it!=adj[u].end();it++){
+        for(it = adj[u].begin();it!=adj[u].end();it++){	//for each of child of u 
             int v = (*it).first;
             int weight = (*it).second;
 
-            if(!inMST[v] && key[v] > weight){
-                key[v] = weight;
+            if(!inMST[v] && key[v] > weight){	//find the child with least weight under u
+                key[v] = weight;		//compare among child of u to find the least weight 
                 pq.push(make_pair(key[v],v));
                 parent[v] = u;
             }
