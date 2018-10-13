@@ -7,8 +7,8 @@ using namespace std;
  
 class Graph {
 private:
-    vector<pair<int, edge>> G; // graph
-    vector<pair<int, edge>> T; // mst
+    vector<pair<int, edge> > G; // graph
+    vector<pair<int, edge> > T; // mst; the result 
     int *parent;
     int V; // number of vertices/nodes in graph
 public:
@@ -21,17 +21,15 @@ public:
 };
 Graph::Graph(int V) {
     parent = new int[V];
- 
-    //i 0 1 2 3 4 5
-    //parent[i] 0 1 2 3 4 5
+
     for (int i = 0; i < V; i++)
         parent[i] = i;
  
-    G.clear();
+    G.clear();	
     T.clear();
 }
 void Graph::AddWeightedEdge(int u, int v, int w) {
-    G.push_back(make_pair(w, edge(u, v)));
+    G.push_back(make_pair(w, edge(u, v)));		//cstor for edge is called 
 }
 int Graph::find_set(int i) {
     // If i is the parent of itself

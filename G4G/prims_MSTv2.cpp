@@ -27,16 +27,17 @@ void Graph::addEdge(int u,int v,int w){
 void Graph::primMST(){
     //Priority Queue (PQ) es (weight,label)
     //Implementa un MIN HEAP de iPair
-    priority_queue<iPair,vector<iPair>,greater<iPair> > pq;
+    priority_queue<iPair,vector<iPair>,greater<iPair> > pq;		//bubble up those with smaller weights
 
-    int src = 0;
+    int src = 0;				//Prim's stands for pick a node; Diff src gv diff MST. 
 
-    vector<int> key(V,INF);
+    vector<int> key(V,INF);		//init all nodes to INF, i.e. non-visited; 
     vector<int> parent(V,-1);	//for printing MST only.
     vector<bool> inMST(V,false);	// subset of MST 
 
-    pq.push(make_pair(0,src));
-    key[src] = 0;
+    pq.push(make_pair(0,src));		//push first node into pq with least weights; 
+									// so as to be popped up as the first node under the greater<>; 
+    key[src] = 0;					// if key[node]!=INF --> i.e. it's visited
 
     while(!pq.empty()){
         int u = pq.top().second;	//get the node (label); use this parent node within each loop in while
@@ -49,8 +50,12 @@ void Graph::primMST(){
             int weight = (*it).second;
 
             if(!inMST[v] && key[v] > weight){	//find the child with least weight under u
+				// key[v] > weight iff the node has been unvisited before
+				//key[v] check if a node is visited or not. 
+				//actually key[] can be turned into a boolean array of visited[]; 
+				//cz key[v] is not enqueued anyway; INF or False make no difference=
                 key[v] = weight;		//compare among child of u to find the least weight 
-                pq.push(make_pair(key[v],v));
+                pq.push(make_pair(key[v],v));		//contain the weight and the node of children enqueued
                 parent[v] = u;
             }
         }
