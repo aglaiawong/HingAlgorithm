@@ -11,7 +11,8 @@ print("-Training-set:\t\t{}".format(len(data.train.labels)))
 print("-Test-set:\t\t{}".format(len(data.train.labels)))
 print("-Validation-set:\t\t{}".format(len(data.validation.labels)))
 
-data.test.cls = np.array([label.argmax() for label in data.test.labels])
+#argmax() not a tf operation; need not called by Session.run()
+data.test.cls = np.array([label.argmax() for label in data.test.labels])	
 img_size = 28
 img_size_flat = img_size*img_size
 img_shape = (img_size, img_size)
@@ -33,15 +34,18 @@ cost = tf.reduce_mean(cross_entropy)
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.5).minimize(cost);
 #https://blog.csdn.net/mao_xiao_feng/article/details/53382790
 
+# accuracy evaluation for classifier: eva # correct samples predicted 
 correct_prediction = tf.equal(y_pred, y_true_cls)	#rtn: A Tensor of type bool.
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))		#numeric tensor required by reduce_mean(), not boolean!
 
 session = tf.Session()
 #Returns an Op that initializes global variables, which is run by run() 
+# first operation to run after session establishment --> init graph tensors
 session.run(tf.global_variables_initizalizer())
 
 batch_size = 100
 
+# this operator for iterative, batch training 
 def optimize(num_iteration):
 	for i in range(num_iterations):
 		x_batch, y_true_batch = data.train.next_batch(batch_size)	#iterative, each batch modifies a bit of the weights upon previous training result; an epoch is a continuous process! :) 
@@ -52,7 +56,7 @@ def optimize(num_iteration):
 		
 feed_dict_test = {x: data.test.images, y_true: data.test.labels, y_true_cls: data.test.cls}	
 def print_accuracy():
-	acc = session.run(accuracy, feed_dict=feed_dict_test)
+	acc = session.run(accuracy, feed_dict=feed_dict_test)	#variables in feed_dict is those needed by the operator inside run()
 	print("Accuracy on test-set: {0:.1%}".format(acc))		
 
 #thus, Session.run() parameter: operations + variables (set via feed_dict())
