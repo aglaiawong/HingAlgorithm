@@ -43,6 +43,7 @@ y_pred = tf.nn.softmax(logits)
 y_pred_cls = tf.argmax(y_pred, axis=1)	#take argmax along each column
 
 # logit = [num_samples, num_class]
+# logit as the output of last layer in neural network 
 # at (i,j) = likelihood of i'th sample input belonging to j'th class
 # thus, for each row, it's the sample's probability across all classes FOR A SINGLE SAMPLE 
 
@@ -91,7 +92,7 @@ def print_confusion_matrix():
 	cls_pred = session.run(y_pred_cls, feed_dict=feed_dict_test)
 	
 	# text confusion matrix
-	cm = confusion_matrix(y_true=cls_true, y_pred=cls_pred)
+	cm = confusion_matrix(y_true=cls_true, y_pred=cls_pred)		#(y,x)
 	print(cm)
 	
 	plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
