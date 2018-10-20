@@ -44,6 +44,57 @@ int cutRod(int price[], int n){	//n as price.size()
 	return r[n+1]; 
 }
 
+/*
+SOLN: memotization
+*/
+
+int memoized_cut_rod_aux(int p[], int n, int r[]){
+	if(r[n]>=0) return r[n];		//already calculated last element
+	int q;
+	if(n==0)	//rod is of length=0
+		q = 0;
+	else if(q == INT_MIN){
+		for(int i=1; i<n;i++){
+			q = max(q, p[i]+memoized_cut_rod_aux(p, n-i, r))
+		}
+	}
+	
+	r[n] = q;
+	return q; 
+}
+
+
+int memoized_cut_rod(int p[], int n){
+	int r[n];
+	for(int i=0;i<n;i++){
+		r[i] = INT_MIN;
+	}
+	
+	return memoized_cut_rod_aux(p,n,r);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
