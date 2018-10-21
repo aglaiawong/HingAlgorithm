@@ -49,13 +49,15 @@ SOLN: memotization
 */
 
 int memoized_cut_rod_aux(int p[], int n, int r[]){
-	if(r[n]>=0) return r[n];		//already calculated last element
+	if(r[n]>=0) return r[n];		//already calculated last element; simply returns this as answer 
 	int q;
 	if(n==0)	//rod is of length=0
 		q = 0;
 	else if(q == INT_MIN){
-		for(int i=1; i<n;i++){
+		for(int i=1; i<=n;i++){		//must start from 1
 			q = max(q, p[i]+memoized_cut_rod_aux(p, n-i, r))
+			//memotize by recursion, top-down 
+			// current maximum, q, stores the most profitable segmentation so far, while trying new cuts, finally take the maximum
 		}
 	}
 	
@@ -65,39 +67,12 @@ int memoized_cut_rod_aux(int p[], int n, int r[]){
 
 
 int memoized_cut_rod(int p[], int n){
-	int r[n];
-	for(int i=0;i<n;i++){
-		r[i] = INT_MIN;
+	//p[0] = 0 assumed; 
+	
+	int r[n+1];		//r[0,1,...,n]
+	for(int i=0;i<=n;i++){
+		r[i] = INT_MIN;		//memoization: top-down needs initializations
 	}
 	
-	return memoized_cut_rod_aux(p,n,r);
+	return memoized_cut_rod_aux(p,n,r);		//just to start the recursion 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
