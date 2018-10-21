@@ -22,4 +22,4 @@ int LCS(string X, string Y){
 		//c[i-1][j] or c[i][j-1] means either not take a char from X or from Y
 	}
 	return c;
-}
+} 
