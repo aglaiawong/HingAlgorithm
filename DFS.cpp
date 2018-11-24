@@ -15,7 +15,7 @@ public:
 
 Graph::Graph(int n){
 	this->n = n;
-	adj = new queue<int>[n];	//one extendible queue per node
+	adj = new queue<int>[n];	//one extendible queue per node; n starting node 
 }
 
 void Graph::addEdge(int v, int w){
