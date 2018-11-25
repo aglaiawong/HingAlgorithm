@@ -139,7 +139,7 @@ print("Linear Regression Equation: " + equation)
 
 # predict on test set 
 resultsDF = lrModel.transform(testSetDF).select("AT", "V", "AP", "RH", "PE", "Prediction_PE")
-#model.transform() transform model by appending a col of prediction to the dataset being tested. 
+#model.transform() fills the predictionCol set in model with the prediction 
 
 from pyspark.ml.evaluation import RegressionEvaluator
 #to evaluate, you need to set which col is the prediction, which is original col 
