@@ -217,14 +217,65 @@ display(df.select('callType').groupBy('CallType').count().orderBy("count", ascen
 
 #bkmk: Spark Logo Tiny Doing Date/Time Analysis
 
+###################
+# add & delete columns 
+###################
+from_pattern1 = 'MM/dd/yyyy'
+to_pattern1 = 'yyyy-MM-dd'
+
+from_pattern2 = 'MM/dd/yyyy hh:mm:ss aa'
+to_pattern2 = 'MM/dd/yyyy hh:mm:ss aa'
 
 
+fireServiceCallsTsDF = fireServiceCallsDF \
+  .withColumn('CallDateTS', unix_timestamp(fireServiceCallsDF['CallDate'], from_pattern1).cast("timestamp")) \
+  .drop('CallDate')
+
+fireServiceCallsDF.printSchema()
+
+df.select('CallDateTS').distinct().orderBy()
+
+# take a particular column and show first 5 records 
+df.select('CallType').show(5, False)   # truncation of super-long record == False 
+
+# how many incidents of each call type there? 
+# the name is arbitrary for orderBy() col
+display(df.select('CallType').groupBy('CallType').count().orderBy("count", ascending=False))
 
 
+%sql SELECT count(*) FROM fireServiceVIEW;
 
+#Which neighborhood in SF generated the most calls last year?
+%sql SELECT `NeighborhoodDistrict`, count(`NeighborhoodDistrict`) AS Neighborhood_Count FROM fireServiceVIEW WHERE year(`CallDateTS`) == '2015' GROUP BY `NeighborhoodDistrict` ORDER BY Neighborhood_Count DESC LIMIT 15;
 
+joinedDF = fireServiceDF.join(incidentsDF, fireServiceDF.IncidentNumber == incidentsDF.IncidentNumber)
 
+#from spark df to pandas df 
+pandas2016 = joinedDF(year('CallDateTS')=='2016').toPandas()
 
+display(joinedDF.filter(year('CallDateTS') == '2015').filter(col('NeighborhoodDistrict') == 'Russian Hill').groupBy('Primary Situation').count().orderBy(desc("count")).limit(10))
+#Selects column based on the column name and returns it as a Column. 
+
+df.count()		#get total number of records 
+
+# col():Selects column based on the column name and returns it as a Column. 
+joinedDF.filter(year('CallDateTS') == '2015').filter(col('NeighborhoodDistrict') == 'Tenderloin').count().orderBy(desc("count")).limit(10))
+
+joinedDF.filter(year('CallDateTS')=='2015').filter(col('NeighborhoodDistrict')=='Tenderloin').groupBy('Primary Situation').count().orderBy(des("count")).limit(10))
+# after groupBy(), must followed by aggregative count(), then only 2 columns returned: primary_situ & count 
+# after count, column automatically named as 'count()'
+
+#filter(Column condition)
+#Filters rows using the given condition. This explains why filter(col(colName))
+
+#groupBy(): Groups the Dataset using the specified columns, so that we can run aggregation on them. 
+#this explains why only specified column returned after groupBy()
+
+################################################
+# Spark dataset reference: https://spark.apache.org/docs/2.3.0/api/java/index.html?org/apache/spark/sql/Dataset.html
+################################################
+
+pddf = df.toPandas()
 
 
 
