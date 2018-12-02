@@ -5,17 +5,51 @@
 from pyspark.sql import SQLContext
 sqlContext = SQLContext(sc)
 
-#create dataframe 
+#create dataframe from data src
 plantDF = sqlContext.read.load('<fileName>')		#create a dataframe
+
+#create df from existing RDD of Row object
+lines = sc.textFile(".../people.txt")	#lines of text splitted by '\n'
+parts = lines.map(lambda l: l.split(','))
+# form a RDD of row object by map(); key as column name and schema inferred 
+people = parts.map(lambda p: Row(name=p[0], age=int(p[1])))
+# infer schema, create table from RDD of Row objects
+schemaPeople = spark.createDataFrame(people)
+# then register the view, i.e. a Hive table in memory; require caching
+schemaPeople.createOrReplaceTempView("people")
+# use sql to inquire a table 
+teenagers = spark.sql("Select name FROM people WHERE age>=18")
+# rdd convert table into RDD of Row objects
+teenNames = teenagers.rdd.map(lambda p: "Name: " + p.name).collect()
+
+
+#create dataframe from csv 
+df = spark.read.csv('/mnt/sf_open_data/.../file.csv', header=True, schema=fireSchema)
 
 #e.g.
 plantDF = sqlContext.read.format('com.databricks.spark.csv').options(delimiter='\t', header='true', inferschema='true').load("/databricks-datasets/power-plant/data")
 
+
+###########################
+# explore the data 
+###########################
 #check datatypes
 plantDF.dtypes		#return: [('AT', 'double'), ('V', 'double')...]
+df.printSchema()
 
 #show the table in html 
 display(plantDF)
+plantDF.show()	#an plain text table with records 
+
+#show table with limited records
+display(df.limit(5))
+
+#get a list of column names of df 
+df.columns
+
+#get total number of records 
+df.count()
+
 
 ###########################
 # user defined schema
@@ -50,13 +84,19 @@ df = sqlContext.table("plant_dataset")
 #M1: sql queries
 %sql
 SELECT * FROM plant_dataset
-des plant_dataset	#describe schema: (colName, dType)
+des plant_dataset	#describe schema of a table: (colName, dType)
 #M2: sql queries
 sqlContext.sql("DROP TABLE IF EXISTS plant_dataset")
 
 # convert table back into dataframe: i.e. deregister 
 df = sqlContext.table("plant_dataset")
 display(df.describe())		#get stat abt data: count, mean, stddev, min, max 
+
+# sql dataframe: select columns 
+df.select("name").show()
+df.select(df['name'], df['age']+1).show()
+df.filter(df['age']>21).show()
+df.groupBy("age").count().show()	#count usually follows groupBy
 
 #########################
 # feature construction  #
@@ -168,7 +208,14 @@ crossval.setEstimatorParamMaps(paramGrid)
 cvModel = crossval.fit(trainingSetDF).bestModel
 
 
+# Add the .distinct() transformation to keep only distinct rows
+# The False below expands the ASCII column width to fit the full text in the output
+fireServiceCallsDF.select('CallType').distinct().show(35, False)
 
+#How many incidents of each call type were there?
+display(df.select('callType').groupBy('CallType').count().orderBy("count", ascending=False)
+
+#bkmk: Spark Logo Tiny Doing Date/Time Analysis
 
 
 
