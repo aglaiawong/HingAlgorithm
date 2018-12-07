@@ -4,7 +4,7 @@
 # ii) pass fnc in (i) to map() applied onto a line of text RDD
 #########################
 
-# step(i)
+# step(i): identify validity of each log line, if correct, parse it into Row objects in RDD. 
 def parseApacheLogLine(logline):
 	match = re.search(APACHE_ACCESS_LOG_PATTERN, logline)	#ret: MatchObject instance; splittable by group()
 	if match is None:
@@ -32,7 +32,7 @@ access_log = parsed_log.filter(lambda s: s[1]==1).map(lambda s:s[0]).cache()
 # here, it returns RDDs of valid parsed logs; i.e. a collection of valid records
 
 #optimize: skip groupByKey()
-code = access_logs.map(lambda x: (x.response_code, 1)).groupByKey().reduceByKey(add).cache()
+code = access_logs.map(lambda x: (x.response_code, 1)).groupByKey().reduceByKey(add).cache()		#groupByKey() in-RDD combiner: recall one partition, one machine, one RDD; thus, combine before shuffling
 # just use reduceByKey() directly on map() outputs 
 code = access_logs.map(lambda x: (x.response_code, 1)).reduceByKey(add).cache()
 
@@ -40,14 +40,14 @@ code = access_logs.map(lambda x: (x.response_code, 1)).reduceByKey(add).cache()
 labels = responseCodeToCount.map(lambda (x,y): x).collect()
 print labels	#only after collect() can we call on labels 
 count = access_logs.count()
-fracs = responseCodeToCount.map(lambda (x,y): (float(y)/count)).collect()
+fracs = responseCodeToCount.map(lambda (x,y): (float(y)/count)).collect()		#collect() return a list of elements 
 
 ########################
 # 2 approaches taking top 10 frequent items
 ########################
 
 #M1: takeOrdered()
-mostVisitedHost = access_logs.map(lambda x: (x.host, 1)).reduceByKey(add).takeOrdered(10, lambda y: -y[1])
+mostVisitedHost = access_logs.map(lambda x: (x.host, 1)).reduceByKey(add).takeOrdered(10, lambda y: -y[1])		#takeOrdered() is an action
 
 #M2: filter()
 mostVisitedHost = access_logs.map(lambda x: (x.host, 1)).reduceByKey(add).filter(lambda q: q[1]>10)
@@ -62,9 +62,9 @@ hostsPick20 = hostMoreThan10.map(lambda x: x[0]).take(20)
 ########################
 endpoints = (access_logs
              .map(lambda log: (log.endpoint, 1))
-             .reduceByKey(lambda a, b : a + b)
+             .reduceByKey(add)
              .cache())
-ends = endpoints.map(lambda (x, y): x).collect()
+ends = endpoints.map(lambda (x, y): x).collect()		#collect() returns a list of x values 
 counts = endpoints.map(lambda (x, y): y).collect()
 
 fig = plt.figure(figsize=(8,4.2), facecolor='white', edgecolor='white')
@@ -76,7 +76,6 @@ plt.plot(counts)
 display(fig)
 
 numUniqueHosts = access_logs.map(lambda x: x.host).distinct().count()
-
 
 #hourly unique host list : [(hour, #unique hosts)]
 hourlyHostsList = access_logs.map(lambda x: (x.date_time.hour , x.host)).distinct().groupByKey().reduceByKey(len)		#mapValues() also okay: cz groupByKey ensure one key per list 
@@ -97,22 +96,4 @@ hourAndHost = access_logs.map(lambda log:(log.date_time.hour, log.host)).groupBy
 #trap of filter(): still returns Row()
 # each record in a rdd is a spark Row() object
 badRecoerds = access_logs.filter(lambda x: x.response_code==404).cache()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

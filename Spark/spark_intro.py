@@ -9,7 +9,7 @@ filePath = 'dbfs:/FileStore/tables/shakespere.txt'
 spRDD = sc.textFile(filePath, 8).map(removePunctuation)
 
 #apply function via map: take each elements in partions and perform operations 
-capitalRDD = wordsRDD.map(capitalize)
+capitalRDD = wordsRDD.map(capitalize)		#map(x) = for each element in each rdd, do...x
 # identical 
 capitalRDD = wordsRDD.map(lambda x: capitalize(x))
 
@@ -31,20 +31,20 @@ wordsGrouped = wordPairs.groupByKey()
 # Do the following to get: rat:[2], elements:[1]
 
 # here, x[1] is a list of values for particular key 
-wordCountsGrouped = wordsGrouped.map(lambda x: (x[0], sum(x[1]))
+wordCountsGrouped = wordsGrouped.map(lambda x: (x[0], sum(x[1]))		#sum() on an list gives the total counts 
 
 # M2: count by reduceByKey()
 wordCountsGrouped = wordPairs.reduceByKey(lambda a,b: a+b)
 
 # a simple word count program looks like one-line 
-wordCountsCollected = (wordsRDD.map(lambda x: (x,1)).reduceByKey(lambda a,b: a+b).collect())
+wordCountsCollected = wordsRDD.map(lambda x: (x,1)).reduceByKey(lambda a,b: a+b).collect()
 
 # metadata: get number of records within the RDD
 uniqueWords = wordCounts.count()
 
 # count total number of words in document
 # before counting, must use flatMap()
-spWordsRDD = spRDD.flatMap(lambda x:x.split())
+spWordsRDD = spRDD.flatMap(lambda x:x.split())	#return a list on each elements in rdd; thus, flattened to give a single array 
 spWordsCount = spWordsRDD.count()
 
 spWordsRDD.top(5)	#return elements in descending order 
@@ -61,26 +61,6 @@ top10WordsAndCounts.collect()
 
 # c.f. 
 top10WordsAndCounts.cache()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

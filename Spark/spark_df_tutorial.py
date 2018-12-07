@@ -11,8 +11,11 @@ plantDF = sqlContext.read.load('<fileName>')		#create a dataframe
 #create df from existing RDD of Row object
 lines = sc.textFile(".../people.txt")	#lines of text splitted by '\n'
 parts = lines.map(lambda l: l.split(','))
+
 # form a RDD of row object by map(); key as column name and schema inferred 
+# a data frame only formed from a collection of Row() objects in RDD
 people = parts.map(lambda p: Row(name=p[0], age=int(p[1])))
+
 # infer schema, create table from RDD of Row objects
 schemaPeople = spark.createDataFrame(people)
 # then register the view, i.e. a Hive table in memory; require caching
@@ -72,7 +75,8 @@ altPlantDF = sqlContext.read.format('com.databricks.spark.csv').options(delimite
 # query the dataframe: drop and add table  #
 ############################################
 
-#sqlContext ~ sqlContext as a mini db, queries issued with '.sql()'
+#sqlContext ~ distributed SQL Enginer: ~sqlContext as a mini db, queries issued with '.sql()'
+from pyspark.sql import SQLContext
 sqlContext.sql("DROP TABLE IF EXISTS plant_dataset")
 dbutils.fs.rm("dbfs:/user/hive/warehouse/plant_dataset", True)
 
