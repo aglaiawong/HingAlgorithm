@@ -51,10 +51,12 @@ def printRDD(r):
 
 ranks = links.map(lambda (url, neighbours): (url, 1.0))
 for iteration in xrange(10):
-	contribs = links.join(ranks).flatMap(lambda (url, (urls, rank)): computeContribs(urls, rank))   #rank is for LHS's link, i.e. pointing out to neighbour links
+	# LHS url distributes its PR mass to each of its neighbours 
+    contribs = links.join(ranks).flatMap(lambda (url, (urls, rank)): computeContribs(urls, rank))   #rank is for LHS's link, i.e. pointing out to neighbour links
 	
 	print(contribs.take(5))
 	
+    # each neighbor collect its incoming PR
 	ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85+0.15)
     
 	print('--------------------------------')
@@ -63,7 +65,7 @@ for iteration in xrange(10):
 #for (link, rank) in ranks.collect():
 #	print "%s has rank: %s." % (link, rank)
 
-ranks.take(4)	
+ranks.take(4)
 	
 	
 	
