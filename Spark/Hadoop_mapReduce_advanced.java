@@ -60,3 +60,12 @@ private static class MyReducer extends
 		}
 	}
 
+
+	
+/*
+Some general operators 
+*/	
+context.write(k,v);
+UDV.set()
+
+
