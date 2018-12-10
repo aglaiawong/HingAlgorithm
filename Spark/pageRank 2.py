@@ -8,12 +8,22 @@ def computeContribs(urls, rank):	#calculate contributions to a target website by
 
 def parseNeighbors(urls):
 	parts = re.split(r'\s+', urls)		#split by space
-	return parts[0], parts[1]	#return as a tuple 
-
+    return parts[0], parts[1]	#return as a tuple 
+    
+def totalNumNodes(pair):
+    return [pair[0], pair[1]]
+        
 lines = sc.textFile('url.txt')
 links = lines.map(lambda urls: parseNeighbors(urls)).distinct().groupByKey().cache()		#avoid same url pointing to itself: Baidu	Baidu
+N = links.flatMap(lambda x: totalNumNodes(x)).distinct().count()
 #after map(), return a RDD. Call distinct() on this RDD eliminates two (Baidu, Baidu)
 #after groupByKey(), return an RDD of: (Baidu, [Weibo, Android, Yahoo, Google]), i.e. Google points to Baidu
+
+#prepare list for finding dangling poitns 
+pointOutwards = links.map(lambda x: x[0]).distinct().collect()
+beingPointed = links.map(lambda y: y[1]).distinct().collect()
+danglingNodes = [for x in beingPointed if x not in pointOutwards]
+danglingNodesRDD = sc.parallelize(danglingNodes).cache()
 
 #initialize mass for each page being pointed at 
 # a global variable preserved across iterations 
@@ -24,8 +34,11 @@ for iteration in xrange(10):       # the iterative step;
 	#after join(): (url, [neighbour]) + (url, rank) = (url, ([neighbour], rank))
 	#self comes first in value pair; thus, WRONG: (url, (rank, neighbour))
 	
-	ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85+0.15)		#Pass each value in the key-value pair RDD through a map function without changing the keys; this also retains the original RDD’s partitioning. 
+	ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85+0.15/N)		#Pass each value in the key-value pair RDD through a map function without changing the keys; this also retains the original RDD’s partitioning. 
 	# mapValues(): for further operatios on values only
+    
+    missingMass = ranks.map(lambda x: x if x[0] in danglingNodes).reduceByKey(add).map(lambda y: y[1]).sum()       # sum values across all kv pairs 
+    ranks = ranks.mapValues(lambda r: 0.85*(missingMass/N+r) + 0.15/N)
 
 for(link, rank) in ranks.collect():
 	print "%s has rank: %s." % (link, rank)
