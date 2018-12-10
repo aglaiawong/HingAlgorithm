@@ -37,7 +37,8 @@ for iteration in xrange(10):       # the iterative step;
 	ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85+0.15/N)		#Pass each value in the key-value pair RDD through a map function without changing the keys; this also retains the original RDD’s partitioning. 
 	# mapValues(): for further operatios on values only
     
-    missingMass = ranks.map(lambda x: x if x[0] in danglingNodes).reduceByKey(add).map(lambda y: y[1]).sum()       # sum values across all kv pairs 
+    #missingMass = ranks.map(lambda x: x if x[0] in danglingNodes).reduceByKey(add).map(lambda y: y[1]).sum()       # sum values across all kv pairs 
+    missingMass = ranks.map(lambda x: x if x[0] in danglingNodes).reduceByKey(add).value().sum()       # sum values across all kv pairs 
     ranks = ranks.mapValues(lambda r: 0.85*(missingMass/N+r) + 0.15/N)
 
 for(link, rank) in ranks.collect():
