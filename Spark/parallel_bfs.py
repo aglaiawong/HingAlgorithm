@@ -26,11 +26,15 @@ def min(list_of_values):
 
 	
 lines = sc.textFile("dbfs:/FileStore/tables/graph.txt")
+# nodes as adj. list, constant throughout iteration --> Thus, cache() avoid repeatitive computations 
 nodes = lines.map(parseNeighbors).cache()
+# wegiht vector to be updated repeatedly across iterations, no caching 
 dists = nodes.map(lambda node: (node[0], 0 if node[0]=='0' else sys.maxint))	#init original 
 
+# across iterations, update global rdd dists. 
 for iteration in range(4):  #the iterative part
+    # graph structure preserved upon .join() with 
 	update = nodes.join(dists).flatMap(lambda node_neighbors_dist: BFS(node_neighbors_dist))	#get <node, [list_of_distances_from_itself_to_src]>
-	dists = update.reduceByKey(min)
+	dists = update.reduceByKey(min)     #min, not add. Noted.
 
 dists.sortByKey().collect()
