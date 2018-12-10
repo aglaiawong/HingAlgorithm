@@ -23,7 +23,7 @@ N = links.flatMap(lambda x: totalNumNodes(x)).distinct().count()
 pointOutwards = links.map(lambda x: x[0]).distinct().collect()
 beingPointed = links.map(lambda y: y[1]).distinct().collect()
 danglingNodes = [for x in beingPointed if x not in pointOutwards]
-danglingNodesRDD = sc.parallelize(danglingNodes).cache()
+#danglingNodesRDD = sc.parallelize(danglingNodes).cache()
 
 #initialize mass for each page being pointed at 
 # a global variable preserved across iterations 
