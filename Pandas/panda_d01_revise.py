@@ -207,11 +207,60 @@ df1.fillna(value=5)
 # inspect where the NaN are 
 pdf.isna(df1)
 
+# calculate cumulative values within a column 
+df.apply(np.cumsum)		#default axis=0, apply fnc on each column 
+'''
+                   A         B         C   D     F
+2013-01-01  0.000000  0.000000 -1.509059   5   NaN
+2013-01-02  1.212112 -0.173215 -1.389850  10   1.0
+2013-01-03  0.350263 -2.277784 -1.884779  15   3.0
+2013-01-04  1.071818 -2.984555 -2.924354  20   6.0
+2013-01-05  0.646846 -2.417535 -2.648122  25  10.0
+2013-01-06 -0.026844 -2.303886 -4.126549  30  15.0
+'''
 
+# apply fnc to each column 
+df.apply(lambda x: x.max() - x.min())
+'''
+A    2.073961
+B    2.671590
+C    1.785291
+D    0.000000
+F    4.000000
+dtype: float64
+'''
 
+# join by key
+left = pd.DataFrame({'key':['foo', 'bar'], 'lval':[1,2]})	#convert Dict into df
+right = pd.DataFrame({'key':['foo', 'bar'], 'rval':[4,5]})
+pd.merge(left, right, on='key')
 
+'''
+Grouping in Pandas
+i) splitting the data 
+ii) applying some fnc 
+iii) combining 
+'''
 
+#group by multi-index
+df.groupby(['A','B']).sum()
+'''
+                  C         D
+A   B                        
+bar one   -1.814470  2.395985
+    three -0.595447  0.166599
+    two   -0.392670 -0.136473
+foo one   -1.195665 -0.616981
+    three  1.928123 -1.623033
+    two    2.414034  1.600434
+'''
 
+# time series 
+rng = pd.date_range('1/1/2012', periods=100, freq='S')
+ts = pd.Series(np.random.randint(0,500, len(rng)), index=rng)
+ts.resample('5Min').sum()
+
+#http://pandas.pydata.org/pandas-docs/stable/10min.html#categoricals
 
 
 
