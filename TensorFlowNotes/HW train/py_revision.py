@@ -1,6 +1,6 @@
 '''
 # usage of 'del'
-# only delete reference variable, not the data in memory (ref below)
+# only delete reference variable, not the data in memory (ref belowgit )
 '''
 
 if __name__=='__main__':
