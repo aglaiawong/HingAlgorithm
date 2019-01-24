@@ -20,7 +20,7 @@ int factorial(int x){
 		return 1;
 	if(dp[x]!=-1)
 		return dp[x];
-	return (dp[x] = x * factorial(dp[i-1]));	//x starts from x, memotization
+	return (dp[x] = x * factorial(dp[x-1]));	//x starts from x, memotization
 	// peel onion layer-by-layer; 
 	// returning the value == layer-by-layer, rebuild the onion tgt 
 }
